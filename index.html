@@ -13,15 +13,18 @@
     <button id="btnRepos">Repos</button>
     <button id="btnIssues">Issues</button>
     <button id="btnCommits">Commits</button>
+    <button id="btnIssuesPrivate">IssuesPrivate</button>
     <div id="divResult"></div>
     <script>
       const btnRepos = document.getElementById("btnRepos");
       const btnIssues = document.getElementById("btnIssues");
       const btnCommits = document.getElementById("btnCommits");
       const divResult = document.getElementById("divResult");
+      const btnIssuesPrivate = document.getElementById("btnIssuesPrivate");
       btnRepos.addEventListener("click", getRepos);
       btnIssues.addEventListener("click", getIssues);
       btnCommits.addEventListener("click", e => getCommits());
+      btnIssuesPrivate.addEventListener("click", getIssuesPrivate);
       async function getRepos() {
         clear();
         const url =
@@ -87,7 +90,27 @@
             btn.textContent = u.title;
             btn.addEventListener('click',e=> getCommits(u.url))
             divResult.appendChild(btn);
-        })
+        });
+      async function getIssuesPrivate() {
+        clear();
+        const headers = {
+            Authorization: Token // I didn't write token because of your warnings
+        };
+        const url =
+        "https://api.github.com/search/issues?q=repo:HackYourFutureBelgium/private-repo type:issue";
+        const response = await fetch(url, {
+            method: "GET",
+            headers: headers
+        });
+        const result = await response.json();
+          result.items.forEach(i => {
+          anchor = document.createElement("a");
+          anchor.href = i.html_url;
+          anchor.textContent = i.title;
+          divResult.appendChild(anchor);
+          divResult.appendChild(document.createElement("br"));
+        });
+      }
       }	      
       function clear() {
         while (divResult.firstChild)
